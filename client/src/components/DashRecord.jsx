@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
@@ -7,6 +7,7 @@ import apiRequest from "@/lib/apiRequest";
 import toast from "react-hot-toast";
 
 const DashRecord = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const [loading, setLoading] = useState(false);
@@ -90,6 +91,23 @@ const DashRecord = () => {
       toast.error(
         error.response?.data?.message || "Failed to update health record!"
       );
+      setLoading(false);
+    }
+  };
+  //delete record
+  const handleDeleteRecord = async () => {
+    try {
+      setLoading(true);
+      if (!id) {
+        return;
+      }
+      const response = await apiRequest.delete(`/health-records/${id}`);
+      toast.success(response.data.message);
+      navigate("/dashboard?tab=records");
+      setLoading(false);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete record");
+      console.log(error);
       setLoading(false);
     }
   };
@@ -230,6 +248,13 @@ const DashRecord = () => {
             </form>
           </DialogContent>
         </Dialog>
+        <Button
+          variant="destructive"
+          className="w-full"
+          onClick={handleDeleteRecord}
+        >
+          Delete Record
+        </Button>
       </div>
     </div>
   );

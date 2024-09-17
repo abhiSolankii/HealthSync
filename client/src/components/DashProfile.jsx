@@ -52,15 +52,7 @@ const DashProfile = () => {
             {currentUser.healthRecords.length}
           </p>
         </div>
-        <div className=" grid grid-cols-3 text-center justify-between lg:w-[60%] mx-auto p-4 rounded-md pl-8 pr-8">
-          <p className="text-slate-600">Last Record</p>
-          <span className="opacity-50">:</span>
-          <p className="font-semibold text-slate-700">
-            {currentUser.healthRecords[-1]
-              ? currentUser.healthRecords[-1].createdAt
-              : "None"}
-          </p>
-        </div>
+
         <div className=" flex flex-row justify-between lg:w-[65%] mx-auto p-4 rounded-md pl-8 pr-8 my-4">
           <Button
             className="mx-auto w-full bg-blue-400 hover:bg-blue-300 flex items-center gap-1 p-6"

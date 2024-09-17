@@ -6,6 +6,10 @@ import { MdInsights } from "react-icons/md";
 import { Link } from "react-router-dom";
 
 const Home = () => {
+  const playVideo = () => {
+    window.location.href =
+      "https://drive.google.com/file/d/1WY5PLVVPntZC5ETLlvAgzHmXT-Xevp5t/view?usp=sharing";
+  };
   return (
     <div className="lg:flex flex-row justify-between  ">
       <div className="p-4 lg:p-20 flex flex-col gap-8">
@@ -43,6 +47,7 @@ const Home = () => {
             variant="outline"
             size="lg"
             className="gap-1 transition delay-150 duration-300 ease-in-out  hover:bg-black hover:text-white items-center rounded-3xl"
+            onClick={playVideo}
           >
             Demo{" "}
             <span>
