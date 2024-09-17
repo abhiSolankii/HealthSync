@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 router.post("/", createHealthRecord);
-router.get("/", getHealthRecords);
+router.get("/:userId/all", getHealthRecords);
 router.get("/:id", getHealthRecord);
 router.put("/:id", updateHealthRecord);
 router.delete("/:id", deleteHealthRecord);

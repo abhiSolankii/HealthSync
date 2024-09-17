@@ -89,64 +89,13 @@ export const signIn = async (req, res) => {
   }
 };
 
-export const google = async (req, res, next) => {
-  const { name, email, googlePhotoUrl } = req.body;
-
+export const signOut = async (req, res) => {
   try {
-    const validUser = await User.findOne({ email });
-    if (validUser) {
-      //generate token
-      const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
-      const { password: pass, ...user } = validUser._doc;
-
-      res
-        .status(200)
-        .cookie("access_token", token, {
-          httpOnly: true,
-        })
-        .json({ message: "SignIn Successful", user });
-    } else {
-      //if user is not signed in
-
-      //generate random password for user
-      const generatedPassword =
-        Math.random().toString(36).slice(-8) +
-        Math.random().toString(36).slice(-8);
-
-      //hash password
-      const salt = bcryptjs.genSaltSync(10);
-      const hashedPassword = bcryptjs.hashSync(generatedPassword, salt);
-
-      //create user
-      const newUser = new User({
-        fullname: name,
-        username: email.split("@")[0],
-        email: email,
-        password: hashedPassword,
-        profilePicture: googlePhotoUrl,
-      });
-      try {
-        //save the new user
-
-        await newUser.save();
-
-        //generate token
-        const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
-        const { password: pass, ...user } = newUser._doc;
-
-        res
-          .status(201)
-          .cookie("access_token", token, {
-            httpOnly: true,
-          })
-          .json({ message: "SignUp Successful", user });
-      } catch (error) {
-        console.error("Error in google Sign in: ", error);
-        res.status(500).json({ message: "Failed to Sign Up with google" });
-      }
-    }
+    res
+      .clearCookie("health_token")
+      .status(200)
+      .send({ message: "Signed out successfully" });
   } catch (error) {
-    console.error("Error in SignIn controller", error.message);
-    res.status(500).json({ error: "Failed to SignIn" });
+    res.status(500).send({ message: "Error in Signing out!", error });
   }
 };

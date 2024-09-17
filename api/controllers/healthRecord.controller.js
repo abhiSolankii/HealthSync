@@ -1,9 +1,12 @@
 import jwt from "jsonwebtoken";
 import HealthRecord from "../models/healthRecord.model.js";
+import User from "../models/user.model.js";
 
 export const getHealthRecords = async (req, res) => {
+  const { userId } = req.params;
   const {
-    date,
+    minDate,
+    maxDate,
     minHeartRate,
     maxHeartRate,
     minSystolicBP,
@@ -18,59 +21,70 @@ export const getHealthRecords = async (req, res) => {
     // Create a dynamic filter object based on the query parameters
     const filters = {};
 
-    // Filter by date if provided
-    if (date) {
-      filters.date = new Date(date);
+    if (minDate || maxDate) {
+      filters.date = {};
+      if (minDate) {
+        filters.date.$gte = new Date(minDate); // Set minimum date filter
+      }
+      if (maxDate) {
+        filters.date.$lte = new Date(maxDate); // Set maximum date filter
+      }
     }
 
-    // Filter by heart rate range if provided
     if (minHeartRate || maxHeartRate) {
       filters.heartRate = {};
       if (minHeartRate) {
-        filters.heartRate.$gte = parseInt(minHeartRate);
+        filters.heartRate.$gte = parseInt(minHeartRate, 10);
       }
       if (maxHeartRate) {
-        filters.heartRate.$lte = parseInt(maxHeartRate);
+        filters.heartRate.$lte = parseInt(maxHeartRate, 10);
       }
     }
 
-    // Filter by systolic blood pressure range if provided
     if (minSystolicBP || maxSystolicBP) {
       filters["bloodPressure.systolic"] = {};
       if (minSystolicBP) {
-        filters["bloodPressure.systolic"].$gte = parseInt(minSystolicBP);
+        filters["bloodPressure.systolic"].$gte = parseInt(minSystolicBP, 10);
       }
       if (maxSystolicBP) {
-        filters["bloodPressure.systolic"].$lte = parseInt(maxSystolicBP);
+        filters["bloodPressure.systolic"].$lte = parseInt(maxSystolicBP, 10);
       }
     }
 
-    // Filter by diastolic blood pressure range if provided
     if (minDiastolicBP || maxDiastolicBP) {
       filters["bloodPressure.diastolic"] = {};
       if (minDiastolicBP) {
-        filters["bloodPressure.diastolic"].$gte = parseInt(minDiastolicBP);
+        filters["bloodPressure.diastolic"].$gte = parseInt(minDiastolicBP, 10);
       }
       if (maxDiastolicBP) {
-        filters["bloodPressure.diastolic"].$lte = parseInt(maxDiastolicBP);
+        filters["bloodPressure.diastolic"].$lte = parseInt(maxDiastolicBP, 10);
       }
     }
 
-    // Filter by body temperature range if provided
     if (minBodyTemperature || maxBodyTemperature) {
       filters.bodyTemperature = {};
       if (minBodyTemperature) {
-        filters.bodyTemperature.$gte = parseInt(minBodyTemperature);
+        filters.bodyTemperature.$gte = parseInt(minBodyTemperature, 10);
       }
       if (maxBodyTemperature) {
-        filters.bodyTemperature.$lte = parseInt(maxBodyTemperature);
+        filters.bodyTemperature.$lte = parseInt(maxBodyTemperature, 10);
       }
     }
 
-    // Find records based on the dynamic filter object
-    const healthRecords = await HealthRecord.find(filters);
+    // Fetch user with the specified userId and apply filters to their health records
+    const user = await User.findById(userId)
+      .populate({
+        path: "healthRecords",
+        match: filters,
+        select: "date note _id",
+      })
+      .select("-password");
 
-    res.status(200).send({ records: healthRecords });
+    if (user) {
+      res.status(200).send({ records: user.healthRecords });
+    } else {
+      res.status(404).send({ message: "User not found!" });
+    }
   } catch (error) {
     res.status(500).send({ message: "Error retrieving health records", error });
   }
@@ -91,12 +105,14 @@ export const getHealthRecord = async (req, res) => {
 };
 
 export const createHealthRecord = async (req, res) => {
-  const { bodyTemperature, bloodPressure, heartRate } = req.body;
+  const { bodyTemperature, bloodPressure, heartRate, note } = req.body;
   const tokenUserId = req.userId;
 
-  if (!bodyTemperature || !bloodPressure || !heartRate)
+  if (!bodyTemperature || !bloodPressure || !heartRate || !note)
     return res.status(400).send({ message: "All fields are required!" });
+
   try {
+    // Create the new health record
     const newHealthRecord = new HealthRecord({
       userId: tokenUserId,
       date: new Date(),
@@ -106,13 +122,26 @@ export const createHealthRecord = async (req, res) => {
         diastolic: bloodPressure.diastolic,
       },
       heartRate,
+      note,
     });
 
     if (newHealthRecord) {
+      // Save the new health record
       await newHealthRecord.save();
-      res
-        .status(201)
-        .send({ message: "Health record created!", newHealthRecord });
+
+      // Update the user's healthRecords array by adding the new health record's ObjectId
+      await User.findByIdAndUpdate(
+        tokenUserId,
+        {
+          $push: { healthRecords: newHealthRecord._id },
+        },
+        { new: true }
+      );
+
+      res.status(201).send({
+        message: "Health record created",
+        newHealthRecord,
+      });
     } else {
       res.status(400).send({ message: "Invalid data!" });
     }
@@ -123,9 +152,9 @@ export const createHealthRecord = async (req, res) => {
 
 export const updateHealthRecord = async (req, res) => {
   const id = req.params.id;
-  const { bodyTemperature, bloodPressure, heartRate } = req.body;
+  const { bodyTemperature, bloodPressure, heartRate, note } = req.body;
   try {
-    const data = { bodyTemperature, bloodPressure, heartRate };
+    const data = { bodyTemperature, bloodPressure, heartRate, note };
     const healthRecord = await HealthRecord.findByIdAndUpdate(id, data, {
       new: true,
     });
