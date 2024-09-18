@@ -76,8 +76,8 @@ export const signIn = async (req, res) => {
       process.env.JWT_SECRET
     );
     const { password: pass, ...user } = validUser._doc;
-    const isProd = process.env.NODE_ENV_PROD === "true";
 
+    const isProd = process.env.NODE_ENV_PROD === "true";
     res
       .status(200)
       .cookie("health_token", token, {
@@ -86,6 +86,9 @@ export const signIn = async (req, res) => {
         secure: isProd,
       })
       .json({ message: "SignIn Successful", user });
+
+    // sending cookies manually
+    res.status(200).json({ message: "SignIn Successful", user, token });
   } catch (error) {
     console.error("Error in SignIn controller", error.message);
     res.status(500).json({ error: "Failed to SignIn" });

@@ -2,6 +2,7 @@
   "name": "client",
   "private": true,
   "version": "0.0.0",
+  "proxy": "https://health-sync-six.vercel.app",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -20,6 +21,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "js-cookie": "^3.0.5",
     "lucide-react": "^0.441.0",
     "react": "^18.3.1",
     "react-datepicker": "^7.3.0",

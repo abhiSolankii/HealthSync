@@ -27,3 +27,11 @@ Like this:
 4. Run - npm run dev
 
 Go to the url
+
+//Manually setting the cookie to avoid deployment issue
+Cookies.set("health_token", res.data.token, {
+expires: 7,
+path: "/",
+secure: process.env.NODE_ENV === "production",
+sameSite: "None",
+});
