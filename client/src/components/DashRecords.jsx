@@ -203,7 +203,7 @@ const DashRecords = () => {
           </DialogContent>
         </Dialog>
       </div>
-      <div className="my-6 grid grid-cols-3 items-center">
+      <div className="my-6 grid grid-cols-1 lg:grid-cols-3 items-center">
         {loading ? (
           <div className="items-center text-center flex justify-center mt-20">
             <svg

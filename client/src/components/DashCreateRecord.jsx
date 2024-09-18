@@ -183,7 +183,7 @@ const DashCreateRecord = () => {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                   ></path>
                 </svg>
-                <span>Signing in...</span>
+                <span>Submitting record...</span>
               </>
             ) : (
               <p>Submit record</p>
