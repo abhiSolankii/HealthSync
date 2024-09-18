@@ -20,6 +20,9 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://localhost:5174",
+      "https://healthsync-mern.vercel.app",
+      "https://healthsync-mern-abhishek-solankis-projects-5d3b88eb.vercel.app",
+      "https://healthsync-mern-git-main-abhishek-solankis-projects-5d3b88eb.vercel.app",
       "https://healthsync-mern.netlify.app",
     ],
     credentials: true,
