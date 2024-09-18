@@ -13,24 +13,17 @@ const app = express();
 dotenv.config();
 const __dirname = path.resolve();
 
-const PORT = process.env.PORT || 5500;
-
 //essentials
-app.use(express.json());
-app.use(cookieParser());
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "https://healthsync-mern.vercel.app",
-      "https://healthsync-mern-abhishek-solankis-projects-5d3b88eb.vercel.app",
-      "https://healthsync-mern-git-main-abhishek-solankis-projects-5d3b88eb.vercel.app",
-      "https://healthsync-mern.netlify.app",
-    ],
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
   })
 );
+app.use(express.json());
+app.use(cookieParser());
+
+const PORT = process.env.PORT || 5500;
 
 //routes
 app.use("/api/auth", authRoutes);

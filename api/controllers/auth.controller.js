@@ -73,19 +73,21 @@ export const signIn = async (req, res) => {
     //generate token
     const token = jwt.sign(
       { id: validUser._id, isAdmin: validUser.isAdmin },
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
     );
+
     const { password: pass, ...user } = validUser._doc;
 
     const isProd = process.env.NODE_ENV_PROD === "true";
-    res
-      .status(200)
-      .cookie("health_token", token, {
-        httpOnly: true,
-        sameSite: "None",
-        secure: false,
-      })
-      .json({ message: "SignIn Successful", user });
+
+    res.cookie("health_token", token, {
+      maxAge: 2 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: "Strict",
+    });
+
+    res.status(200).json({ message: "SignIn Successful", user });
   } catch (error) {
     console.error("Error in SignIn controller", error.message);
     res.status(500).json({ error: "Failed to SignIn" });
