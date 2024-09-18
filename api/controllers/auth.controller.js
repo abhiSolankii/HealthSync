@@ -83,7 +83,7 @@ export const signIn = async (req, res) => {
       .cookie("health_token", token, {
         httpOnly: true,
         sameSite: "None",
-        secure: isProd,
+        secure: false,
       })
       .json({ message: "SignIn Successful", user });
   } catch (error) {
