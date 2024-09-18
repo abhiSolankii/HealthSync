@@ -30,7 +30,7 @@ const Navbar = () => {
             to="/"
             className="text-center rounded-md px-4 py-1 bg-gradient-to-r from-purple-400 via-blue-400 to-pink-400 font-semibold text-slate-800 font-serif text-xl "
           >
-            HealthSync
+            HS
           </Link>
         </div>
 

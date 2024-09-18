@@ -84,8 +84,8 @@ const SignUp = () => {
 
       setTimeout(() => {
         navigate("/signin");
+        setLoading(false);
       }, 2000);
-      setLoading(false);
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "Failed to signup!");
