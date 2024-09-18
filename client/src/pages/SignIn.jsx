@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-
+import Cookies from "js-cookie";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 //redux imports
@@ -64,6 +64,7 @@ const SignIn = () => {
         headers: { "Content-Type": "application/json" },
       });
       updateUser(res.data.user);
+
       toast.success(res.data.message);
 
       setTimeout(() => {

@@ -86,9 +86,6 @@ export const signIn = async (req, res) => {
         secure: isProd,
       })
       .json({ message: "SignIn Successful", user });
-
-    // sending cookies manually
-    res.status(200).json({ message: "SignIn Successful", user, token });
   } catch (error) {
     console.error("Error in SignIn controller", error.message);
     res.status(500).json({ error: "Failed to SignIn" });
