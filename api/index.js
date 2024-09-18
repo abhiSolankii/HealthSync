@@ -7,9 +7,12 @@ import { verifyToken } from "./middleware/verifyToken.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import healthRecordRoutes from "./routes/healthRecord.routes.js";
+import path from "path";
 
 const app = express();
 dotenv.config();
+const __dirname = path.resolve();
+
 const PORT = process.env.PORT || 5500;
 
 //essentials
@@ -29,13 +32,17 @@ app.use(
   })
 );
 
-//connect to database
-connectToDb();
-
 //routes
 app.use("/api/auth", authRoutes);
 app.use("/api/health-records", verifyToken, healthRecordRoutes);
 
+app.use(express.static(path.join(__dirname, "/client/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+});
+
 app.listen(PORT, () => {
+  connectToDb();
   console.log(`Server running on port ${PORT}`);
 });
